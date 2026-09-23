@@ -5,3 +5,4 @@ uvicorn[standard]>=0.29
 boto3>=1.34
 numpy>=1.26
 pydantic>=2.7
+
