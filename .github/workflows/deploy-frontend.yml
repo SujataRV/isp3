@@ -44,14 +44,14 @@ jobs:
 
       - name: Sync dist/ to S3 bucket
         run: |
-          aws s3 sync frontend/dist/ s3://radar-frontend-output/ \
+          aws s3 sync frontend/dist/ s3://deployed-radar-api-frontend/ \
             --delete \
             --cache-control "public,max-age=31536000,immutable" \
             --exclude "index.html"
 
           # index.html must not be cached so users always get the latest version
-          aws s3 cp frontend/dist/index.html s3://radar-frontend-output/index.html \
+          aws s3 cp frontend/dist/index.html s3://deployed-radar-api-frontend/index.html \
             --cache-control "no-cache,no-store,must-revalidate"
 
       - name: Done
-        run: echo "Deployed to http://radar-frontend-output.s3-website.ap-south-1.amazonaws.com"
+        run: echo "Deployed to http://deployed-radar-api-frontend.s3-website.ap-south-1.amazonaws.com"
