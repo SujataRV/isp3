@@ -100,7 +100,7 @@ class StreamingFallDetector:
         window_z = list(self.z_buf)[-DETECTION_WINDOW:]
 
         # 90th-percentile peak: a single stray spike frame (1 out of 20)
-        # no longer keeps z_peak elevated for the whole next window
+        # no longer keeps z_peak elevated for the whole next window 
         z_peak    = float(np.percentile(window_z, 90))
 
         # Smoothed current: mean of last 3 frames — one noisy frame can't
