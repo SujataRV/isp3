@@ -1,0 +1,28 @@
+# Secrets — never bake into the image
+*.pem
+
+# Version control
+.git
+.gitignore
+
+# Frontend source (not part of the API image)
+frontend/
+
+# RPi pipeline (separate deployment target)
+rpi_pipeline/
+
+# Local build artifacts and docs
+graphify-out/
+*.docx
+*.md
+*.backup.py
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# OS junk
+.DS_Store
+Thumbs.db
