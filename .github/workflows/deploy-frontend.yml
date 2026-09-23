@@ -6,6 +6,7 @@ on:
       - deployed
     paths:
       - "frontend/**"
+      - ".github/workflows/deploy-frontend.yml"
 
 jobs:
   deploy:
