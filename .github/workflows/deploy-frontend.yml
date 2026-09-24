@@ -1,9 +1,9 @@
-﻿name: Deploy Frontend to S3
+name: Deploy Frontend to S3
 
 on:
   push:
     branches:
-      - deployed
+      - staged
     paths:
       - "frontend/**"
       - ".github/workflows/deploy-frontend.yml"
@@ -12,6 +12,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment: staged
 
     steps:
       - name: Checkout code
