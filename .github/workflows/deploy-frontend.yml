@@ -1,0 +1,58 @@
+﻿name: Deploy Frontend to S3
+
+on:
+  push:
+    branches:
+      - deployed
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy-frontend.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        env:
+          VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_DEVICE_ID: ${{ secrets.VITE_DEVICE_ID }}
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Sync dist/ to S3 bucket
+        run: |
+          aws s3 sync frontend/dist/ s3://${{ secrets.S3_BUCKET_NAME }}/ \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html"
+
+          # index.html must never be cached
+          aws s3 cp frontend/dist/index.html s3://${{ secrets.S3_BUCKET_NAME }}/index.html \
+            --cache-control "no-cache,no-store,must-revalidate"
+
+      - name: Done
+        run: echo "Deployed to http://${{ secrets.S3_BUCKET_NAME }}.s3-website.ap-south-1.amazonaws.com"

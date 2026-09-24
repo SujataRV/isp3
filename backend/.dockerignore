@@ -1,0 +1,30 @@
+﻿# Secrets
+*.pem
+*.key
+.env
+
+# Version control
+.git
+.gitignore
+
+# Not part of the API image
+../frontend/
+../edge_reference/
+
+# Docs and scripts
+*.md
+*.sh
+nginx-radar.conf
+radar-api.service
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db

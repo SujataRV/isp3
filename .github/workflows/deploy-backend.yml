@@ -1,0 +1,58 @@
+﻿name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - deployed
+    paths:
+      - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy backend files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "backend/radar-api-main.py,backend/Dockerfile,backend/requirements.txt,backend/requirements-aws.txt,backend/.dockerignore,backend/activity"
+          target: "~/"
+          strip_components: 1
+
+      - name: Build image and restart container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+
+            echo "=== Building Docker image ==="
+            sudo docker build -t radar-api .
+
+            echo "=== Stopping old container(s) ==="
+            sudo docker ps -q | xargs -r sudo docker stop
+
+            echo "=== Starting new container ==="
+            sudo docker run -d \
+              --restart=always \
+              -p 80:80 \
+              -e USE_DYNAMODB=${{ secrets.USE_DYNAMODB || 'false' }} \
+              -e AWS_REGION=ap-south-1 \
+              -e RADAR_EVENTS_TABLE=radar_events \
+              -e FALL_METHOD=velocity \
+              -e SENSOR_ELEV_TILT_DEG=15 \
+              radar-api
+
+            echo "=== Health check ==="
+            sleep 4
+            curl -sf http://localhost/health && echo "Health check passed" || echo "Health check failed"

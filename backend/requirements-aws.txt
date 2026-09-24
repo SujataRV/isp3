@@ -1,0 +1,7 @@
+# Optional — only needed when running with USE_DYNAMODB=true against a real
+# AWS account (e.g. the EC2 deployment). Not required for local testing.
+#
+#   pip install -r requirements.txt -r requirements-aws.txt
+#   USE_DYNAMODB=true uvicorn radar-api-main:app --port 8000
+
+boto3>=1.28

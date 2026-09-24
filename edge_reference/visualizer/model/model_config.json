@@ -1,0 +1,15 @@
+{
+  "count_invariant": true,
+  "n_features": 50,
+  "classes": [
+    "running",
+    "stationary",
+    "walking"
+  ],
+  "window": 45,
+  "step": 5,
+  "variant": "rel_z",
+  "per_track": true,
+  "dbscan": true,
+  "note": "per-track DBSCAN training, mounting-invariant z"
+}

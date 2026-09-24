@@ -1,0 +1,20 @@
+# Core requirements for radar-api-main.py — everything needed to run isp3
+# locally, with NO AWS account, credentials, or network access required.
+#
+#   pip install -r requirements.txt
+#   uvicorn radar-api-main:app --reload --port 8000
+#
+# AWS (DynamoDB) is opt-in — see requirements-aws.txt and USE_DYNAMODB in
+# radar-api-main.py / LOCAL_TESTING.md.
+
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+numpy>=1.24
+
+# HAR (activity) model
+# Pinned: scikit-learn 1.7+ breaks XGBoost 2.x model loading with
+# "`_estimator_type` undefined" (seen on the Raspberry Pi, 23 Sep).
+xgboost>=2.0,<3
+scikit-learn>=1.3,<1.7
+joblib>=1.1

@@ -1,0 +1,15 @@
+# Requirements for Raspberry Pi — AWS streaming pipeline
+# Install with: pip install -r requirements.txt
+
+# Radar serial communication
+pyserial>=3.5
+
+# Numerical computing (feature extraction)
+numpy>=1.21
+
+# HTTP requests to AWS EC2 API
+requests>=2.28
+
+# Instant file detection via inotify (Linux)
+# Without this, falls back to 100ms polling
+watchdog>=3.0

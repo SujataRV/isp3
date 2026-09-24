@@ -1,0 +1,17 @@
+# Install:  sudo cp radar-api.service /etc/systemd/system/
+#           sudo systemctl daemon-reload && sudo systemctl enable --now radar-api
+[Unit]
+Description=Radar fall + activity API
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/radar-backend
+EnvironmentFile=-/home/ubuntu/radar-backend/.env
+ExecStart=/home/ubuntu/radar-backend/venv/bin/uvicorn radar-api-main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
