@@ -6,11 +6,13 @@ on:
       - deployed
     paths:
       - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    environment: deployed
 
     steps:
       - name: Checkout code
@@ -22,9 +24,9 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "backend/radar-api.py,backend/Dockerfile,backend/requirements.txt,backend/.dockerignore"
+          source: "backend/radar-api-main.py,backend/Dockerfile,backend/requirements.txt,backend/requirements-aws.txt,backend/.dockerignore,backend/activity"
           target: "~/"
-          strip_components: 1   # strips the "backend/" prefix so files land in ~/
+          strip_components: 1
 
       - name: Build image and restart container
         uses: appleboy/ssh-action@v1.0.3
@@ -45,10 +47,13 @@ jobs:
             sudo docker run -d \
               --restart=always \
               -p 80:80 \
+              -e USE_DYNAMODB=${{ secrets.USE_DYNAMODB || 'false' }} \
               -e AWS_REGION=ap-south-1 \
               -e RADAR_EVENTS_TABLE=radar_events \
+              -e FALL_METHOD=velocity \
+              -e SENSOR_ELEV_TILT_DEG=15 \
               radar-api
 
             echo "=== Health check ==="
-            sleep 3
+            sleep 4
             curl -sf http://localhost/health && echo "Health check passed" || echo "Health check failed"
